@@ -4,10 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/main.js"></script>
     <title>Bintruder</title>
 </head>
 <body>
-    <h1>Ez egy király oldal!!!</h1>
+    <h1>BinTruder</h1>
+    <table>
+        <tr>
+            <th>Request</th>
+            <th>Payloads</th>
+        </tr>
+        <tr>
+            <td>
+                Támadási típus:
+                <select name="attackType" id="attackType" onchange="AttackTypeSelected()">
+                    <option value="0">Sniper</option>
+                    <option value="1" title="Fejlesztés alatt!" disabled>Battering Ram</option>
+                    <option value="2" title="Fejlesztés alatt!" disabled>Pitchfork</option>
+                    <option value="3">Cluster Bomb</option>
+                </select>
+            </td>
+            <td>
+                Payload típus:
+                <select name="payloadType" id="payloadType" onchange="PayloadTypeSelected()">
+                    <option value="0">Simple list</option>
+                    <option value="1">Numbers</option>
+                    <option value="2">Brute forcer</option>
+                    <option value="3">Null payloads</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Cél:
+                <input type="text" name="target" id="target" placeholder="pl.: google.com">
+            </td>
+            <td id="payloadConfig">
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Paraméter(ek) <button id="addParam">hozzáadása</button> / <button id="removeParams">eltávolítása</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                HTTP kérés:
+                <textarea name="requestBody" id="requestBody" rows="10" spellcheck="false"></textarea>
+            </td>
+        </tr>
+    </table>
+
+    <script type="module" src="js/main.js"></script> 
 </body>
 </html>
