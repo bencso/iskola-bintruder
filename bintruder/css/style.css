@@ -19,6 +19,10 @@ td {
     padding: 5px;
 }
 
+#payloadConfig {
+    vertical-align: top;
+}
+
 /* tr:nth-child(even) {
     background-color: rgb(224, 224, 224);
 } */
@@ -33,16 +37,15 @@ textarea {
     resize: none;
 }
 
-
-
-
-
-.simpleListFormOuter {
-    display: grid;
-    align-items: start;
+.startBar {
+    display: flex;
+    justify-content: space-around;
 }
 
-.simpleListFormInner {
+
+
+
+.simpleListForm {
     display: flex;
     justify-content: space-between;
 }

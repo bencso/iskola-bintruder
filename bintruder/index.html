@@ -16,7 +16,7 @@
         <tr>
             <td>
                 Támadási típus:
-                <select name="attackType" id="attackType" onchange="AttackTypeSelected()">
+                <select name="attackType" id="attackType">
                     <option value="0">Sniper</option>
                     <option value="1" title="Fejlesztés alatt!" disabled>Battering Ram</option>
                     <option value="2" title="Fejlesztés alatt!" disabled>Pitchfork</option>
@@ -25,7 +25,7 @@
             </td>
             <td>
                 Payload típus:
-                <select name="payloadType" id="payloadType" onchange="PayloadTypeSelected()">
+                <select name="payloadType" id="payloadType">
                     <option value="0">Simple list</option>
                     <option value="1" title="Fejlesztés alatt!" disabled>Numbers</option>
                     <option value="2">Brute forcer</option>
@@ -49,6 +49,13 @@
             <td>
                 HTTP kérés:
                 <textarea name="requestBody" id="requestBody" rows="10" spellcheck="false"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="startBar">
+                    <button id="startAttack">Start</button>
+                </div>
             </td>
         </tr>
     </table>

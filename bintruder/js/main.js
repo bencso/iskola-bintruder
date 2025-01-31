@@ -60,6 +60,11 @@ function UpdateRequest(value) {
     requestBody.value = String.format(currentRequest, value)
 }
 
+const startButton = document.getElementById("startAttack")
+startButton.onclick = function() {
+    console.log("start")
+}
+
 //#region Attack select functions
 document.getElementById("attackType").onchange = () =>  {
     let type = document.getElementById("attackType").value
@@ -89,8 +94,7 @@ let payloadFormConfigs = {
             }
         ],
         setup: (form) => {
-            payloadConfig.className = "simpleListFormOuter"
-            form.className = "simpleListFormInner"
+            form.className = "simpleListForm"
         }
     },
     2 : {
@@ -112,8 +116,6 @@ let payloadFormConfigs = {
             }
         ],
         setup: (form, config) => {
-            payloadConfig.className = ""
-
             config.fields.forEach(element => {
                 let label = document.getElementById("label_" + element.id)
                 label.style.display = "block"
@@ -121,9 +123,12 @@ let payloadFormConfigs = {
             });
 
             document.getElementById("charset").value = "abcdefghijklmnopqrstuvwxyz"
+            document.getElementById("minLength").value = "4"
+            document.getElementById("maxLength").value = "8"
         }
     }
 }
+
 const payloadConfig = document.getElementById("payloadConfig")
 
 function SwitchPayloadConfig() {
