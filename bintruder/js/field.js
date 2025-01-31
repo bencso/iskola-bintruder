@@ -8,6 +8,8 @@ export function renderField(obj) {
             return renderEmail(obj)
         case "select":
             return renderSelect(obj)
+        case "button":
+            return renderButton(obj)
         case "default":
             return renderDefault(obj)
     }
@@ -123,6 +125,16 @@ function renderSelect(obj) {
 
         return field
     })
+}
+
+function renderButton(obj) {
+    let field = document.createElement("input")
+    field.id = obj.id
+    field.type = "button"
+    field.onclick = obj.onPress
+    field.value = obj.label
+
+    return field
 }
 
 function renderDefault(obj) {

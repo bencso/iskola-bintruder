@@ -32,3 +32,17 @@ textarea {
     width: 99%;
     resize: none;
 }
+
+
+
+
+
+.simpleListFormOuter {
+    display: grid;
+    align-items: start;
+}
+
+.simpleListFormInner {
+    display: flex;
+    justify-content: space-between;
+}

@@ -61,7 +61,7 @@ function UpdateRequest(value) {
 }
 
 //#region Attack select functions
-function AttackTypeSelected() {
+document.getElementById("attackType").onchange = () =>  {
     let type = document.getElementById("attackType").value
     console.log(type)
 }
@@ -72,20 +72,70 @@ let payloadFormConfigs = {
     0 : {
         fields: [
             {
-                id: "text1",
-                type: "text",
-                label: "ez itt most az első text",
+                id: "loadList",
+                type: "button",
+                label: "Load ...",
+                onPress: () => {
+                    console.log("Load list")
+                }
+            },
+            {
+                id: "clearList",
+                type: "button",
+                label: "Clear",
+                onPress: () => {
+                    console.log("Clear list")
+                }
             }
-        ]
+        ],
+        setup: (form) => {
+            payloadConfig.className = "simpleListFormOuter"
+            form.className = "simpleListFormInner"
+        }
+    },
+    2 : {
+        fields: [
+            {
+                id: "charset",
+                type: "text",
+                label: "Character set: ",
+            },
+            {
+                id: "minLength",
+                type: "number",
+                label: "Minimum length: ",
+            },
+            {
+                id: "maxLength",
+                type: "number",
+                label: "Maximum length: ",
+            }
+        ],
+        setup: (form, config) => {
+            payloadConfig.className = ""
+
+            config.fields.forEach(element => {
+                let label = document.getElementById("label_" + element.id)
+                label.style.display = "block"
+                label.style.margin = "0"
+            });
+
+            document.getElementById("charset").value = "abcdefghijklmnopqrstuvwxyz"
+        }
     }
 }
 const payloadConfig = document.getElementById("payloadConfig")
 
-function PayloadTypeSelected() {
+function SwitchPayloadConfig() {
     payloadConfig.innerHTML = ""
     let config = payloadFormConfigs[document.getElementById("payloadType").value]
     if (config == null) { return }
 
-    payloadConfig.appendChild(renderForm())
+    let form = renderForm(config)
+    payloadConfig.appendChild(form)
+    config.setup(form, config)
 }
+
+document.getElementById("payloadType").onchange = SwitchPayloadConfig
+SwitchPayloadConfig() //init
 //#endregion

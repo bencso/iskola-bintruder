@@ -27,9 +27,9 @@
                 Payload típus:
                 <select name="payloadType" id="payloadType" onchange="PayloadTypeSelected()">
                     <option value="0">Simple list</option>
-                    <option value="1">Numbers</option>
+                    <option value="1" title="Fejlesztés alatt!" disabled>Numbers</option>
                     <option value="2">Brute forcer</option>
-                    <option value="3">Null payloads</option>
+                    <option value="3" title="Fejlesztés alatt!" disabled>Null payloads</option>
                 </select>
             </td>
         </tr>
@@ -38,9 +38,7 @@
                 Cél:
                 <input type="text" name="target" id="target" placeholder="pl.: google.com">
             </td>
-            <td id="payloadConfig">
-
-            </td>
+            <td id="payloadConfig" rowspan="3"></td>
         </tr>
         <tr>
             <td>
