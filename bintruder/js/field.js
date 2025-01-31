@@ -10,6 +10,8 @@ export function renderField(obj) {
             return renderSelect(obj)
         case "button":
             return renderButton(obj)
+        case "file":
+            return renderFile(obj)
         case "default":
             return renderDefault(obj)
     }
@@ -135,6 +137,16 @@ function renderButton(obj) {
     field.value = obj.label
 
     return field
+}
+
+function renderFile(obj) {
+    return renderLabel(obj, (obj) => {
+        let field = document.createElement("input")
+        field.id = obj.id
+        field.type = "file"
+
+        return field
+    })
 }
 
 function renderDefault(obj) {

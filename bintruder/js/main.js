@@ -12,6 +12,25 @@ if (!String.format) {
     };
 }
 
+//https://stackoverflow.com/a/4314050
+if (!String.prototype.splice) {
+    /**
+     * {JSDoc}
+     *
+     * The splice() method changes the content of a string by removing a range of
+     * characters and/or adding new characters.
+     *
+     * @this {String}
+     * @param {number} start Index at which to start changing the string.
+     * @param {number} delCount An integer indicating the number of old chars to remove.
+     * @param {string} newSubStr The String that is spliced in.
+     * @return {string} A new string with the spliced substring.
+     */
+    String.prototype.splice = function (start, delCount, newSubStr) {
+        return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
+    };
+}
+
 import { renderForm } from "./field.js"
 //#endregion
 
@@ -26,23 +45,28 @@ target.addEventListener("keydown", (e) => {
     UpdateRequest(e.target.value)
 })
 
-document.getElementById("addParam").onclick = function() {
+document.getElementById("addParam").onclick = function () {
     let select = window.getSelection()
     let text = select.toString()
-   
+
     if (text == "") { return }
     if (args.includes(text)) {
         alert("Ilyen nevű paraméter már van!")
         return
     }
 
-    currentRequest += "\n{" + text + "}"
+    let start = requestBody.value.search(text)
+    console.log(start)
+    if (start == -1) { return }
+
+    let final = requestBody.value.splice(start, 0, "$").splice(start + text.length + 1, 0, "$")
+    currentRequest = final
     args.push(text)
 
     UpdateRequest()
 }
 
-document.getElementById("removeParams").onclick = function() {
+document.getElementById("removeParams").onclick = function () {
     args = []
     currentRequest = ""
     UpdateRequest()
@@ -54,19 +78,20 @@ function UpdateRequest(value) {
     }
 
     if (currentRequest == "") {
-        currentRequest = "GET / HTTP/1.1\nHost: {0}"
+        currentRequest = "GET / HTTP/1.1\nHost: " + value
     }
 
-    requestBody.value = String.format(currentRequest, value)
+    requestBody.disabled = false
+    requestBody.value = currentRequest
 }
 
 const startButton = document.getElementById("startAttack")
-startButton.onclick = function() {
+startButton.onclick = function () {
     console.log("start")
 }
 
 //#region Attack select functions
-document.getElementById("attackType").onchange = () =>  {
+document.getElementById("attackType").onchange = () => {
     let type = document.getElementById("attackType").value
     console.log(type)
 }
@@ -74,15 +99,19 @@ document.getElementById("attackType").onchange = () =>  {
 
 //#region Payload select functions
 let payloadFormConfigs = {
-    0 : {
+    0: {
         fields: [
             {
                 id: "loadList",
                 type: "button",
                 label: "Load ...",
                 onPress: () => {
-                    console.log("Load list")
+                    document.getElementById("loadList_fileDialog").click()
                 }
+            },
+            {
+                id: "loadList_fileDialog",
+                type: "file"
             },
             {
                 id: "clearList",
@@ -95,9 +124,23 @@ let payloadFormConfigs = {
         ],
         setup: (form) => {
             form.className = "simpleListForm"
+
+            let dialog = document.getElementById("loadList_fileDialog")
+            dialog.style.display = "none"
+            dialog.setAttribute("multiple", false)
+            dialog.setAttribute("accept", ".txt")
+
+            //https://web.dev/articles/read-files
+            dialog.addEventListener('change', (event) => {
+                let reader = new FileReader()
+                reader.readAsDataURL(event.target.files[0])
+                reader.addEventListener('load', (event) => {
+                    console.log(event.target.result)
+                });
+            });
         }
     },
-    2 : {
+    2: {
         fields: [
             {
                 id: "charset",
