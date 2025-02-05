@@ -1,0 +1,87 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+body [class*=side] {
+  border: 1px solid #6f6f6f;
+}
+body #startAttack {
+  background-color: orangered;
+  color: white;
+  border: none;
+}
+body #startAttack span {
+  font-size: 1rem;
+}
+body .left-side {
+  display: flex;
+  flex-direction: column;
+}
+body .left-side textarea {
+  border-radius: 0;
+  flex: 1;
+  height: -moz-max-content;
+  height: max-content;
+  width: -moz-max-content;
+  width: max-content;
+  resize: none;
+}
+body .right-side {
+  background-color: #f0f0f0;
+}
+body .right-side .title {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #6f6f6f;
+  font-weight: bold;
+}
+body .right-side .payload-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid #6f6f6f;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 0.2rem;
+  display: flex;
+  border: 1px solid #6f6f6f;
+  background-color: white;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+button span {
+  font-size: 0.3rem;
+}
+
+[class*=bar] {
+  border-bottom: 1px solid #6f6f6f;
+  padding: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+input {
+  border: 1px solid #6f6f6f;
+  border-radius: 0;
+}
+
+select {
+  border: 1px solid #6f6f6f;
+  border-radius: 0;
+  width: 100%;
+}/*# sourceMappingURL=main.css.map */
