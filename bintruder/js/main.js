@@ -1,36 +1,5 @@
 //#region Dependencies
-// https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
-if (!String.format) {
-    String.format = function (format) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return format.replace(/{(\d+)}/g, function (match, number) {
-            return typeof args[number] != 'undefined'
-                ? args[number]
-                : match
-                ;
-        });
-    };
-}
-
-//https://stackoverflow.com/a/4314050
-if (!String.prototype.splice) {
-    /**
-     * {JSDoc}
-     *
-     * The splice() method changes the content of a string by removing a range of
-     * characters and/or adding new characters.
-     *
-     * @this {String}
-     * @param {number} start Index at which to start changing the string.
-     * @param {number} delCount An integer indicating the number of old chars to remove.
-     * @param {string} newSubStr The String that is spliced in.
-     * @return {string} A new string with the spliced substring.
-     */
-    String.prototype.splice = function (start, delCount, newSubStr) {
-        return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
-    };
-}
-
+import { rawRequest } from "./dependencies.js"
 import { renderForm } from "./field.js"
 //#endregion
 
@@ -56,7 +25,6 @@ document.getElementById("addParam").onclick = function () {
     }
 
     let start = requestBody.value.search(text)
-    console.log(start)
     if (start == -1) { return }
 
     let final = requestBody.value.splice(start, 0, "$").splice(start + text.length + 1, 0, "$")
@@ -85,10 +53,61 @@ function UpdateRequest(value) {
     requestBody.value = currentRequest
 }
 
+
+//#region Start attack
+class SimpleListPayload {
+    iteration = 0
+
+    Start() {
+        let list = document.getElementById("importedList").value
+        if (list == "") {
+            return false
+        }
+
+        this.list = list.split("\n")
+
+        return true
+    }
+
+    async SendRequest() {
+        //let position = this.iteration % this.list.length
+
+        let arg = this.list[this.iteration]
+        
+        let req = currentRequest
+        args.forEach(element => {
+            let start = req.search(element) - 1
+            req = req.splice(start, 1, arg).splice(start + arg.length, element.length + 1, "")
+        });
+
+        console.log(req)
+        this.iteration++
+        return this.iteration >= this.list.length
+    }
+}
+
+const payloadClasses = {
+    0: SimpleListPayload
+}
+
+let attackQueue = []
 const startButton = document.getElementById("startAttack")
 startButton.onclick = function () {
-    console.log("start")
+    if (currentRequest == "") { return }
+
+    let payload = new payloadClasses[payloadType.value]
+    if (!payload.Start()) {
+        return
+    }
+
+    while (true) {
+        if (payload.SendRequest() == true) {
+            break
+        }
+    }
 }
+//#endregion
+
 
 //#region Attack select functions
 document.getElementById("attackType").onchange = () => {
@@ -98,7 +117,7 @@ document.getElementById("attackType").onchange = () => {
 //#endregion
 
 //#region Payload select functions
-let payloadFormConfigs = {
+const payloadFormConfigs = {
     0: {
         fields: [
             {
@@ -120,6 +139,12 @@ let payloadFormConfigs = {
                 onPress: () => {
                     console.log("Clear list")
                 }
+            },
+            {
+                id: "importedList",
+                type: "textarea",
+                label: "List:",
+                labelOnTop: true
             }
         ],
         setup: (form) => {
@@ -130,12 +155,14 @@ let payloadFormConfigs = {
             dialog.setAttribute("multiple", false)
             dialog.setAttribute("accept", ".txt")
 
+            document.getElementById("importedList").rows = 10
+
             //https://web.dev/articles/read-files
             dialog.addEventListener('change', (event) => {
                 let reader = new FileReader()
-                reader.readAsDataURL(event.target.files[0])
+                reader.readAsText(event.target.files[0])
                 reader.addEventListener('load', (event) => {
-                    console.log(event.target.result)
+                    document.getElementById("importedList").value = event.target.result
                 });
             });
         }
@@ -173,10 +200,11 @@ let payloadFormConfigs = {
 }
 
 const payloadConfig = document.getElementById("payloadConfig")
+const payloadType = document.getElementById("payloadType")
 
 function SwitchPayloadConfig() {
     payloadConfig.innerHTML = ""
-    let config = payloadFormConfigs[document.getElementById("payloadType").value]
+    let config = payloadFormConfigs[payloadType.value]
     if (config == null) { return }
 
     let form = renderForm(config)
@@ -184,6 +212,6 @@ function SwitchPayloadConfig() {
     config.setup(form, config)
 }
 
-document.getElementById("payloadType").onchange = SwitchPayloadConfig
+payloadType.onchange = SwitchPayloadConfig
 SwitchPayloadConfig() //init
 //#endregion
