@@ -1,0 +1,96 @@
+$border-ligth: #6f6f6f;
+$dark-light: #f0f0f0;
+
+html,body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    height: 100vh;
+    width: 100vw;
+
+    [class*="side"]{
+        border: 1px solid $border-ligth;
+    }
+
+    #startAttack{
+        background-color: orangered;
+        color: white;
+        border: none;
+
+        span{
+            font-size: 1rem;
+        }
+    }
+
+    .left-side{
+        display: flex;
+        flex-direction: column;
+
+        textarea{
+            border-radius: 0;
+            flex: 1;    
+            height: max-content;
+            width: max-content;
+            resize: none;
+        }
+    }
+
+    .right-side{
+        background-color: $dark-light;
+        .title{
+            display: flex;
+            justify-content: space-between;
+            padding: .5rem;
+            border-bottom: 1px solid $border-ligth;
+            font-weight: bold;
+        }
+
+        .payload-div{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: .5rem;
+            border-bottom: 1px solid $border-ligth;
+        }
+    }
+}
+
+button{
+    cursor: pointer;
+    border-radius: .2rem;
+    display: flex;
+    border: 1px solid $border-ligth;
+    background-color: white;
+    flex-direction: row;
+    align-items: center;
+    gap: .5rem;
+    justify-content: center;
+
+    span{
+        font-size: .3rem;
+    }
+}
+
+[class*="bar"]{
+    border-bottom: 1px solid $border-ligth;
+    padding: .5rem;
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+input{
+    border: 1px solid $border-ligth;
+    border-radius: 0;
+}
+
+select{
+    border: 1px solid $border-ligth;
+    border-radius: 0;
+    width: 100%;
+}
