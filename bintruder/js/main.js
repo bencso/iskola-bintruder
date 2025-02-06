@@ -71,7 +71,7 @@ class SimpleListPayload {
 
     GetData() {
         this.iteration++
-        return { value: this.list[this.iteration], stop: this.iteration >= this.list.length - 1}  
+        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= (this.list.length) * args.length - 1}  
     }
 }
 
@@ -81,15 +81,12 @@ class SniperAttack {
     }
 
     async SendRequest() {
-        //let position = this.iteration % this.list.length
-
         let data = this.payload.GetData()
+        let position = Math.floor(this.payload.iteration / this.payload.list.length)
+        let arg = args[position]
+        let start = currentRequest.search(arg) - 1
         let value = data.value
-        let req = currentRequest
-        args.forEach(element => {
-            let start = req.search(element) - 1
-            req = req.splice(start, 1, value).splice(start + value.length, element.length + 1, "")
-        });
+        let req = currentRequest.splice(start, 1, value).splice(start + value.length, arg.length + 1, "").replaceAll("$", "")
 
         console.log(req)
 
@@ -98,7 +95,13 @@ class SniperAttack {
 }
 
 class ClusterBombAttack {
+    constructor(payload) {
+        this.payload = payload
+    }
 
+    async SendRequest() {
+        return true
+    }
 }
 
 const payloadClasses = {
