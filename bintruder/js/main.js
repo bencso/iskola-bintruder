@@ -56,7 +56,7 @@ function UpdateRequest(value) {
 
 //#region Start attack
 class SimpleListPayload {
-    iteration = 0
+    iteration = -1
 
     Start() {
         let list = document.getElementById("importedList").value
@@ -69,30 +69,50 @@ class SimpleListPayload {
         return true
     }
 
+    GetData() {
+        this.iteration++
+        return { value: this.list[this.iteration], stop: this.iteration >= this.list.length - 1}  
+    }
+}
+
+class SniperAttack {
+    constructor(payload) {
+        this.payload = payload
+    }
+
     async SendRequest() {
         //let position = this.iteration % this.list.length
 
-        let arg = this.list[this.iteration]
-        
+        let data = this.payload.GetData()
+        let value = data.value
         let req = currentRequest
         args.forEach(element => {
             let start = req.search(element) - 1
-            req = req.splice(start, 1, arg).splice(start + arg.length, element.length + 1, "")
+            req = req.splice(start, 1, value).splice(start + value.length, element.length + 1, "")
         });
 
         console.log(req)
-        this.iteration++
-        return this.iteration >= this.list.length
+
+        return data.stop
     }
+}
+
+class ClusterBombAttack {
+
 }
 
 const payloadClasses = {
     0: SimpleListPayload
 }
 
+const attackClasses = {
+    0: SniperAttack,
+    3: ClusterBombAttack
+}
+
 let attackQueue = []
 const startButton = document.getElementById("startAttack")
-startButton.onclick = function () {
+startButton.onclick = async function () {
     if (currentRequest == "") { return }
 
     let payload = new payloadClasses[payloadType.value]
@@ -100,11 +120,14 @@ startButton.onclick = function () {
         return
     }
 
+    let attack = new attackClasses[document.getElementById("attackType").value](payload)
     while (true) {
-        if (payload.SendRequest() == true) {
+        if (await attack.SendRequest() == true) {
             break
         }
     }
+
+    console.log("done")
 }
 //#endregion
 
@@ -137,7 +160,7 @@ const payloadFormConfigs = {
                 type: "button",
                 label: "Clear",
                 onPress: () => {
-                    console.log("Clear list")
+                    document.getElementById("importedList").value = ""
                 }
             },
             {
