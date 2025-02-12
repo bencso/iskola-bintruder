@@ -1,10 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
 }
 
 body {
@@ -14,140 +11,56 @@ body {
   width: 100vw;
 }
 body [class*=side] {
-  border: 1px solid #bebebe;
+  border: 1px solid #6f6f6f;
 }
-
-.left-side {
-  display: flex;
-  flex-direction: column;
-}
-.left-side select {
-  padding: 0.2rem;
-  border-radius: 0.2rem;
-}
-.left-side select:focus {
-  outline: none;
-}
-.left-side input {
-  padding: 0.2rem;
-  border-radius: 0.2rem;
-  border: 1px solid #bebebe;
-  flex: 1;
-}
-.left-side #startAttack {
-  background-color: rgb(255, 104, 49);
+body #startAttack {
+  background-color: orangered;
   color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   border: none;
-  padding: 0.3rem 1rem;
 }
-.left-side #startAttack p {
-  margin: 0;
-  padding: 0;
-}
-.left-side #startAttack span {
+body #startAttack span {
   font-size: 1rem;
 }
-.left-side .params {
+body .left-side {
   display: flex;
-  gap: 0.5rem;
-  height: 100%;
-  overflow: hidden;
+  flex-direction: column;
 }
-.left-side .params textarea {
+body .left-side textarea {
   border-radius: 0;
-  height: 100%;
-  width: 100%;
   flex: 1;
+  height: -moz-max-content;
+  height: max-content;
+  width: -moz-max-content;
+  width: max-content;
   resize: none;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  border: none;
 }
-.left-side .params textarea:focus {
-  outline: none;
+body .right-side {
+  background-color: #f0f0f0;
 }
-.left-side .params .textarea__lines {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-right: 1px solid #bebebe;
-}
-
-.right-side {
-  background-color: #f9f9f9;
-}
-.right-side #payloadConfig {
-  display: flex;
-  padding: 1rem;
-}
-.right-side #payloadConfig div {
-  flex: 1;
-  display: flex;
-  gap: 0.5rem;
-  flex-direction: column;
-}
-.right-side #payloadConfig div input {
-  padding: 0.2rem;
-  border-radius: 0.2rem;
-  border: 1px solid #bebebe;
-  flex: 1;
-}
-.right-side #payloadConfig div div {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  flex: 1;
-}
-.right-side .simpleListForm {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.right-side .simpleListForm input {
-  cursor: pointer;
-  border-radius: 0.2rem;
-  display: flex;
-  border: 1px solid #bebebe;
-  background-color: white;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.2rem 1rem;
-  justify-content: center;
-}
-.right-side .simpleListForm input span {
-  font-size: 0.3rem;
-}
-.right-side .title {
+body .right-side .title {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem;
-  border-bottom: 1px solid #bebebe;
+  border-bottom: 1px solid #6f6f6f;
   font-weight: bold;
 }
-.right-side .payload-div {
+body .right-side .payload-div {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
-  gap: 1rem;
-  border-bottom: 1px solid #bebebe;
+  border-bottom: 1px solid #6f6f6f;
 }
 
 button {
   cursor: pointer;
   border-radius: 0.2rem;
   display: flex;
-  border: 1px solid #bebebe;
+  border: 1px solid #6f6f6f;
   background-color: white;
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.2rem 1rem;
   justify-content: center;
 }
 button span {
@@ -155,20 +68,20 @@ button span {
 }
 
 [class*=bar] {
-  border-bottom: 1px solid #bebebe;
-  padding: 1rem;
+  border-bottom: 1px solid #6f6f6f;
+  padding: 0.5rem;
   display: flex;
   gap: 0.5rem;
   align-items: center;
 }
 
 input {
-  border: 1px solid #bebebe;
+  border: 1px solid #6f6f6f;
   border-radius: 0;
 }
 
 select {
-  border: 1px solid #bebebe;
+  border: 1px solid #6f6f6f;
   border-radius: 0;
-  flex: 1;
+  width: 100%;
 }/*# sourceMappingURL=main.css.map */
