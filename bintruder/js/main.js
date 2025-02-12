@@ -18,16 +18,18 @@ document.getElementById("addParam").onclick = function () {
     let select = window.getSelection()
     let text = select.toString()
 
+    console.log(select)
+    console.log(text)
     if (text == "") { return }
     if (args.includes(text)) {
         alert("Ilyen nevű paraméter már van!")
         return
     }
 
-    let start = requestBody.value.search(text)
+    let start = requestBody.innerText.search(text)
     if (start == -1) { return }
 
-    let final = requestBody.value.splice(start, 0, "$").splice(start + text.length + 1, 0, "$")
+    let final = requestBody.innerText.splice(start, 0, "$").splice(start + text.length + 1, 0, "$")
     currentRequest = final
     args.push(text)
 
@@ -50,7 +52,7 @@ function UpdateRequest(value) {
     }
 
     requestBody.disabled = false
-    requestBody.value = currentRequest
+    requestBody.innerText = currentRequest
 }
 
 
@@ -229,7 +231,7 @@ const payloadConfig = document.getElementById("payloadConfig")
 const payloadType = document.getElementById("payloadType")
 
 function SwitchPayloadConfig() {
-    payloadConfig.innerHTML = ""
+    payloadConfig.innerText = ""
     let config = payloadFormConfigs[payloadType.value]
     if (config == null) { return }
 
