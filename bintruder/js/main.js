@@ -15,23 +15,24 @@ target.addEventListener("keydown", (e) => {
 })
 
 document.getElementById("requestBody").addEventListener("mouseup", function () {
-    let text = window.getSelection().toString();
+    let text = window.getSelection().toString().trim();
     if (text == "") { return; }
     if (args.includes(text)) {
         alert("Ilyen nevű paraméter már van!");
         return;
     }
-    
+
     let requestBody = document.getElementById("requestBody");
-    let start = requestBody.innerText.indexOf(text);
+    let start =requestBody.innerText.replaceAll("\n\n", "\n").indexOf(text);
     if (start == -1) { return; }
-    
-    let final = requestBody.innerText.slice(0, start) + "$" + text + "$" + requestBody.innerText.slice(start + text.length);
-    currentRequest = final;
+
+    //TODO: Szebb megoldűs
+    let final = requestBody.innerText.replaceAll("\n\n", "\n").slice(0, start) + "$" + text + "$" + requestBody.innerText.slice(start + text.length);
+    currentRequest = final
     args.push(text);
-    
+
     UpdateRequest();
-})
+});
 
 document.getElementById("removeParams").onclick = function () {
     args = []
@@ -70,7 +71,7 @@ class SimpleListPayload {
 
     GetData() {
         this.iteration++
-        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= (this.list.length) * args.length - 1}  
+        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= (this.list.length) * args.length - 1 }
     }
 }
 
