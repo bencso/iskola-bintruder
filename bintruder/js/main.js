@@ -14,27 +14,24 @@ target.addEventListener("keydown", (e) => {
     UpdateRequest(e.target.value)
 })
 
-document.getElementById("addParam").onclick = function () {
-    let select = window.getSelection()
-    let text = select.toString()
-
-    console.log(select)
-    console.log(text)
-    if (text == "") { return }
+document.getElementById("requestBody").addEventListener("mouseup", function () {
+    let text = window.getSelection().toString();
+    if (text == "") { return; }
     if (args.includes(text)) {
-        alert("Ilyen nevű paraméter már van!")
-        return
+        alert("Ilyen nevű paraméter már van!");
+        return;
     }
-
-    let start = requestBody.innerText.search(text)
-    if (start == -1) { return }
-
-    let final = requestBody.innerText.splice(start, 0, "$").splice(start + text.length + 1, 0, "$")
-    currentRequest = final
-    args.push(text)
-
-    UpdateRequest()
-}
+    
+    let requestBody = document.getElementById("requestBody");
+    let start = requestBody.innerText.indexOf(text);
+    if (start == -1) { return; }
+    
+    let final = requestBody.innerText.slice(0, start) + "$" + text + "$" + requestBody.innerText.slice(start + text.length);
+    currentRequest = final;
+    args.push(text);
+    
+    UpdateRequest();
+})
 
 document.getElementById("removeParams").onclick = function () {
     args = []
