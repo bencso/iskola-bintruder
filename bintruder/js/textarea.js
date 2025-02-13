@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const calculateLineNumbers = () => {
-        const lines = textarea.innerHTML.split('\n');
+        const lines = textarea.innerText.split('\n');
         const numLines = lines.map((line) => calculateNumLines(line));
 
         let lineNumbers = [];
@@ -85,6 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Remove the ResizeObserver code
 
     textarea.addEventListener('blur', () => {
-        textarea.innerHTML = textarea.innerHTML.trim();
+        textarea.innerText = textarea.innerText.trim();
     });
 });
