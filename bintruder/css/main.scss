@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
-$border-ligth: #bebebe;
+$border-light: #bebebe;
 $dark-light: #f9f9f9;
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -17,11 +16,10 @@ body {
     height: 100vh;
     width: 100vw;
 
-    [class*="side"] {
-        border: 1px solid $border-ligth;
+    .right-side {
+        border-left: 1px solid $border-light;
     }
 }
-
 
 .left-side {
     display: flex;
@@ -30,17 +28,16 @@ body {
     select {
         padding: .2rem;
         border-radius: .2rem;
-    
+
         &:focus {
             outline: none;
         }
     }
-    
 
     input {
         padding: .2rem;
         border-radius: .2rem;
-        border: 1px solid $border-ligth;
+        border: 1px solid $border-light;
         flex: 1;
     }
 
@@ -87,14 +84,13 @@ body {
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border-right: 1px solid $border-ligth;
+            border-right: 1px solid $border-light;
         }
     }
 }
 
 .right-side {
     background-color: $dark-light;
-
 
     #payloadConfig {
         display: flex;
@@ -109,7 +105,7 @@ body {
             input {
                 padding: .2rem;
                 border-radius: .2rem;
-                border: 1px solid $border-ligth;
+                border: 1px solid $border-light;
                 flex: 1;
             }
 
@@ -118,10 +114,10 @@ body {
                 flex-direction: column;
                 flex: 1;
 
-                textarea{
+                textarea {
                     resize: vertical;
-                    border-radius: 0;
-                    border: 1px solid $border-ligth;
+                    border-radius: .2rem;
+                    border: 1px solid $border-light;
                     outline: none;
                 }
             }
@@ -137,7 +133,7 @@ body {
             cursor: pointer;
             border-radius: .2rem;
             display: flex;
-            border: 1px solid $border-ligth;
+            border: 1px solid $border-light;
             background-color: white;
             flex-direction: row;
             align-items: center;
@@ -155,7 +151,7 @@ body {
         display: flex;
         justify-content: space-between;
         padding: .5rem;
-        border-bottom: 1px solid $border-ligth;
+        border-bottom: 1px solid $border-light;
         font-weight: bold;
     }
 
@@ -165,22 +161,20 @@ body {
         align-items: center;
         padding: .5rem;
         gap: 1rem;
-        border-bottom: 1px solid $border-ligth;
+        border-bottom: 1px solid $border-light;
     }
 }
-
 
 button {
     cursor: pointer;
     border-radius: .2rem;
     display: flex;
-    border: 1px solid $border-ligth;
+    border: 1px solid $border-light;
     background-color: white;
     flex-direction: row;
     align-items: center;
     gap: .5rem;
     padding: .2rem 1rem;
-    justify-content: center;
 
     span {
         font-size: .3rem;
@@ -188,7 +182,7 @@ button {
 }
 
 [class*="bar"] {
-    border-bottom: 1px solid $border-ligth;
+    border-bottom: 1px solid $border-light;
     padding: 1rem;
     display: flex;
     gap: .5rem;
@@ -196,12 +190,12 @@ button {
 }
 
 input {
-    border: 1px solid $border-ligth;
+    border: 1px solid $border-light;
     border-radius: 0;
 }
 
 select {
-    border: 1px solid $border-ligth;
+    border: 1px solid $border-light;
     border-radius: 0;
     flex: 1;
 }

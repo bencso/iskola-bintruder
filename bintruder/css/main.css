@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -13,8 +12,8 @@ body {
   height: 100vh;
   width: 100vw;
 }
-body [class*=side] {
-  border: 1px solid #bebebe;
+body .right-side {
+  border-left: 1px solid #bebebe;
 }
 
 .left-side {
@@ -103,7 +102,7 @@ body [class*=side] {
 }
 .right-side #payloadConfig div div textarea {
   resize: vertical;
-  border-radius: 0;
+  border-radius: 0.2rem;
   border: 1px solid #bebebe;
   outline: none;
 }
@@ -153,7 +152,6 @@ button {
   align-items: center;
   gap: 0.5rem;
   padding: 0.2rem 1rem;
-  justify-content: center;
 }
 button span {
   font-size: 0.3rem;
