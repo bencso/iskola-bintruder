@@ -4,6 +4,12 @@ import { renderForm } from "./field.js"
 //#endregion
 
 const requestBody = document.getElementById("requestBody")
+const selectedPosition = document.getElementById("selectedPosition")
+selectedPosition.style.display = "none"
+selectedPosition.onchange = () => {
+
+}
+
 let currentRequest = ""
 let args = []
 
@@ -137,6 +143,8 @@ startButton.onclick = async function () {
 document.getElementById("attackType").onchange = () => {
     let type = document.getElementById("attackType").value
     console.log(type)
+
+    selectedPosition.style.display = type == 3 ? "block" : "none"
 }
 //#endregion
 
