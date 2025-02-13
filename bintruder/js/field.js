@@ -12,6 +12,8 @@ export function renderField(obj) {
             return renderButton(obj)
         case "file":
             return renderFile(obj)
+        case "textarea":
+            return renderArea(obj)
         case "default":
             return renderDefault(obj)
     }
@@ -144,6 +146,15 @@ function renderFile(obj) {
         let field = document.createElement("input")
         field.id = obj.id
         field.type = "file"
+
+        return field
+    })
+}
+
+function renderArea(obj) {
+    return renderLabel(obj, (obj) => {
+        let field = document.createElement("textarea")
+        field.id = obj.id
 
         return field
     })

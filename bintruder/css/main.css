@@ -56,7 +56,7 @@ body [class*=side] {
   height: 100%;
   overflow: hidden;
 }
-.left-side .params textarea {
+.left-side .params #requestBody {
   border-radius: 0;
   height: 100%;
   width: 100%;
@@ -67,7 +67,7 @@ body [class*=side] {
           appearance: none;
   border: none;
 }
-.left-side .params textarea:focus {
+.left-side .params #requestBody:focus {
   outline: none;
 }
 .left-side .params .textarea__lines {
@@ -98,9 +98,14 @@ body [class*=side] {
 }
 .right-side #payloadConfig div div {
   display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
+  flex-direction: column;
   flex: 1;
+}
+.right-side #payloadConfig div div textarea {
+  resize: vertical;
+  border-radius: 0;
+  border: 1px solid #bebebe;
+  outline: none;
 }
 .right-side .simpleListForm {
   display: flex;

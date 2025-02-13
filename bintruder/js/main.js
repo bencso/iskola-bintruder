@@ -1,36 +1,5 @@
 //#region Dependencies
-// https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
-if (!String.format) {
-    String.format = function (format) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return format.replace(/{(\d+)}/g, function (match, number) {
-            return typeof args[number] != 'undefined'
-                ? args[number]
-                : match
-                ;
-        });
-    };
-}
-
-//https://stackoverflow.com/a/4314050
-if (!String.prototype.splice) {
-    /**
-     * {JSDoc}
-     *
-     * The splice() method changes the content of a string by removing a range of
-     * characters and/or adding new characters.
-     *
-     * @this {String}
-     * @param {number} start Index at which to start changing the string.
-     * @param {number} delCount An integer indicating the number of old chars to remove.
-     * @param {string} newSubStr The String that is spliced in.
-     * @return {string} A new string with the spliced substring.
-     */
-    String.prototype.splice = function (start, delCount, newSubStr) {
-        return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
-    };
-}
-
+import { rawRequest } from "./dependencies.js"
 import { renderForm } from "./field.js"
 //#endregion
 
@@ -45,27 +14,30 @@ target.addEventListener("keydown", (e) => {
     UpdateRequest(e.target.value)
 })
 
-document.getElementById("addParam").onclick = function () {
-    let select = window.getSelection()
-    let text = select.toString()
-
-    if (text == "") { return }
+document.getElementById("requestBody").addEventListener("mouseup", function () {
+    let text = window.getSelection().toString().trim();
+    if (text == "") { return; }
     if (args.includes(text)) {
-        alert("Ilyen nevű paraméter már van!")
-        return
+        alert("Ilyen nevű paraméter már van!");
+        return;
     }
 
-    let start = requestBody.value.search(text)
-    console.log(start)
-    if (start == -1) { return }
+    let requestBody = document.getElementById("requestBody");
+    let start =requestBody.innerText.replaceAll("\n\n", "\n").indexOf(text);
+    if (start == -1) { return; }
 
-    let final = requestBody.value.splice(start, 0, "$").splice(start + text.length + 1, 0, "$")
+    let final = requestBody.innerText.replaceAll("\n\n", "\n").slice(0, start) + "$" + text + "$" + requestBody.innerText.replaceAll("\n\n", "\n").slice(start + text.length)
     currentRequest = final
-    args.push(text)
+    args.push(text);
 
+    UpdateRequest();
+});
+
+document.getElementById("removeParams").onclick = function () {
+    args = []
+    currentRequest = ""
     UpdateRequest()
 }
-
 
 function UpdateRequest(value) {
     if (value == null) {
@@ -77,24 +49,90 @@ function UpdateRequest(value) {
     }
 
     requestBody.disabled = false
-    requestBody.value = currentRequest
+    requestBody.innerText = currentRequest
 }
 
-const startButton = document.getElementById("startAttack")
-startButton.onclick = function () {
-    fetch('https://example.com/api', {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json',
-            'Sec-Fetch-Mode': 'cors'
-        },
-        body: JSON.stringify({ text: requestBody.value })
-    })
-    .then(response => response.json())
-    .then(data => console.log('Success:', data))
-    .catch(error => console.error('Error:', error));    
+
+//#region Start attack
+class SimpleListPayload {
+    iteration = -1
+
+    Start() {
+        let list = document.getElementById("importedList").value
+        if (list == "") {
+            return false
+        }
+
+        this.list = list.split("\n")
+
+        return true
+    }
+
+    GetData() {
+        this.iteration++
+        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= (this.list.length) * args.length - 1 }
+    }
 }
+
+class SniperAttack {
+    constructor(payload) {
+        this.payload = payload
+    }
+
+    async SendRequest() {
+        let data = this.payload.GetData()
+        let position = Math.floor(this.payload.iteration / this.payload.list.length)
+        let arg = args[position]
+        let start = currentRequest.search(arg) - 1
+        let value = data.value
+        let req = currentRequest.splice(start, 1, value).splice(start + value.length, arg.length + 1, "").replaceAll("$", "")
+
+        console.log(req)
+
+        return data.stop
+    }
+}
+
+class ClusterBombAttack {
+    constructor(payload) {
+        this.payload = payload
+    }
+
+    async SendRequest() {
+        return true
+    }
+}
+
+const payloadClasses = {
+    0: SimpleListPayload
+}
+
+const attackClasses = {
+    0: SniperAttack,
+    3: ClusterBombAttack
+}
+
+let attackQueue = []
+const startButton = document.getElementById("startAttack")
+startButton.onclick = async function () {
+    if (currentRequest == "") { return }
+
+    let payload = new payloadClasses[payloadType.value]
+    if (!payload.Start()) {
+        return
+    }
+
+    let attack = new attackClasses[document.getElementById("attackType").value](payload)
+    while (true) {
+        if (await attack.SendRequest() == true) {
+            break
+        }
+    }
+
+    console.log("done")
+}
+//#endregion
+
 
 //#region Attack select functions
 document.getElementById("attackType").onchange = () => {
@@ -104,7 +142,7 @@ document.getElementById("attackType").onchange = () => {
 //#endregion
 
 //#region Payload select functions
-let payloadFormConfigs = {
+const payloadFormConfigs = {
     0: {
         fields: [
             {
@@ -124,8 +162,14 @@ let payloadFormConfigs = {
                 type: "button",
                 label: "Clear",
                 onPress: () => {
-                    console.log("Clear list")
+                    document.getElementById("importedList").value = ""
                 }
+            },
+            {
+                id: "importedList",
+                type: "textarea",
+                label: "List:",
+                labelOnTop: true
             }
         ],
         setup: (form) => {
@@ -136,12 +180,14 @@ let payloadFormConfigs = {
             dialog.setAttribute("multiple", false)
             dialog.setAttribute("accept", ".txt")
 
+            document.getElementById("importedList").rows = 10
+
             //https://web.dev/articles/read-files
             dialog.addEventListener('change', (event) => {
                 let reader = new FileReader()
-                reader.readAsDataURL(event.target.files[0])
+                reader.readAsText(event.target.files[0])
                 reader.addEventListener('load', (event) => {
-                    console.log(event.target.result)
+                    document.getElementById("importedList").value = event.target.result
                 });
             });
         }
@@ -179,10 +225,11 @@ let payloadFormConfigs = {
 }
 
 const payloadConfig = document.getElementById("payloadConfig")
+const payloadType = document.getElementById("payloadType")
 
 function SwitchPayloadConfig() {
-    payloadConfig.innerHTML = ""
-    let config = payloadFormConfigs[document.getElementById("payloadType").value]
+    payloadConfig.innerText = ""
+    let config = payloadFormConfigs[payloadType.value]
     if (config == null) { return }
 
     let form = renderForm(config)
@@ -190,6 +237,6 @@ function SwitchPayloadConfig() {
     config.setup(form, config)
 }
 
-document.getElementById("payloadType").onchange = SwitchPayloadConfig
+payloadType.onchange = SwitchPayloadConfig
 SwitchPayloadConfig() //init
 //#endregion
