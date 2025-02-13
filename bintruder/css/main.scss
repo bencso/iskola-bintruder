@@ -69,7 +69,7 @@ body {
         height: 100%;
         overflow: hidden;
 
-        textarea {
+        #requestBody {
             border-radius: 0;
             height: 100%;
             width: 100%;
@@ -115,10 +115,15 @@ body {
 
             div {
                 display: flex;
-                flex-direction: row;
-                gap: .5rem;
+                flex-direction: column;
                 flex: 1;
 
+                textarea{
+                    resize: vertical;
+                    border-radius: 0;
+                    border: 1px solid $border-ligth;
+                    outline: none;
+                }
             }
         }
     }

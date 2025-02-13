@@ -26,8 +26,7 @@ document.getElementById("requestBody").addEventListener("mouseup", function () {
     let start =requestBody.innerText.replaceAll("\n\n", "\n").indexOf(text);
     if (start == -1) { return; }
 
-    //TODO: Szebb megoldűs
-    let final = requestBody.innerText.replaceAll("\n\n", "\n").slice(0, start) + "$" + text + "$" + requestBody.innerText.slice(start + text.length);
+    let final = requestBody.innerText.replaceAll("\n\n", "\n").slice(0, start) + "$" + text + "$" + requestBody.innerText.replaceAll("\n\n", "\n").slice(start + text.length)
     currentRequest = final
     args.push(text);
 
