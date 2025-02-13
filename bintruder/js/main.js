@@ -22,7 +22,7 @@ document.getElementById("addParam").onclick = function () {
         return;
     }
 
-    let start = requestBody.value.indexOf(text);ó
+    let start = requestBody.value.indexOf(text);
     if (start == -1) { return; }
 
     let final = requestBody.value.slice(0, start) + "$" + text + "$" + requestBody.value.slice(start + text.length);
