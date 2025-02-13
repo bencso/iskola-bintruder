@@ -14,24 +14,23 @@ target.addEventListener("keydown", (e) => {
     UpdateRequest(e.target.value)
 })
 
-document.getElementById("requestBody").addEventListener("mouseup", function () {
-    let text = window.getSelection().toString().trim();
+document.getElementById("addParam").onclick = function () {
+    let text = window.getSelection().toString();
     if (text == "") { return; }
-    if (args.includes(text)) {
+    if (args.includes(text.replaceAll("$", ""))) {
         alert("Ilyen nevű paraméter már van!");
         return;
     }
 
-    let requestBody = document.getElementById("requestBody");
-    let start =requestBody.innerText.replaceAll("\n\n", "\n").indexOf(text);
+    let start = requestBody.value.indexOf(text);ó
     if (start == -1) { return; }
 
-    let final = requestBody.innerText.replaceAll("\n\n", "\n").slice(0, start) + "$" + text + "$" + requestBody.innerText.replaceAll("\n\n", "\n").slice(start + text.length)
+    let final = requestBody.value.slice(0, start) + "$" + text + "$" + requestBody.value.slice(start + text.length);
     currentRequest = final
     args.push(text);
 
     UpdateRequest();
-});
+}
 
 document.getElementById("removeParams").onclick = function () {
     args = []
@@ -49,7 +48,7 @@ function UpdateRequest(value) {
     }
 
     requestBody.disabled = false
-    requestBody.innerText = currentRequest
+    requestBody.value = currentRequest
 }
 
 
