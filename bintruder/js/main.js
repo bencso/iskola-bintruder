@@ -4,14 +4,31 @@ import { renderForm } from "./field.js"
 //#endregion
 
 const requestBody = document.getElementById("requestBody")
-const selectedPosition = document.getElementById("selectedPosition")
-selectedPosition.style.display = "none"
-selectedPosition.onchange = () => {
+const selectedPositionPanel = document.getElementById("selectedPositionPanel")
+selectedPositionPanel.style.display = "none"
 
+const selectedPosition = document.getElementById("selectedPosition")
+selectedPosition.onchange = () => {
+    UpdatePayloadForPosition()
+}
+
+function UpdatePayloadForPosition() {
+    let position = selectedPosition.value
+    if (position == "") { return }
+
+    let data = argsToData[position]
+    if (data) {
+        SwitchPayloadConfig(null, data.type)
+        payloadType.value = data.type
+        return
+    }
+
+    argsToData[position] = { type: payloadType.value, data: null }
 }
 
 let currentRequest = ""
 let args = []
+let argsToData = []
 
 const target = document.getElementById("target")
 target.addEventListener("keydown", (e) => {
@@ -73,19 +90,79 @@ class SimpleListPayload {
         return true
     }
 
-    GetData() {
+    GetDataNext() {
         this.iteration++
         return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= (this.list.length) * args.length - 1 }
+    }
+
+    GetDataCurrent() {
+        let index = this.iteration
+        if (index == -1) {
+            index = 0
+        }
+
+        return { value: this.list[index % this.list.length], stop: index >= (this.list.length) * args.length - 1 }
+    }
+
+    Reset() {
+        this.iteration = -1
+    }
+}
+
+class BruteForcerPayload {
+    iteration = -1
+
+    Start() {
+        let charset = document.getElementById("charset").value
+        let min = document.getElementById("minLength").value
+        let max = document.getElementById("maxLength").value
+
+        if (charset == "" || min == "" || max == "") {ú
+            return false
+        }
+
+        this.charset = charset
+        this.min = min
+        this.max = max
+
+        let maxIter = 0
+        let charCount = charset.length
+        for (let index = min; index <= max; index++) {
+            maxIter += Math.pow(charCount, index)
+        }
+
+        this.maxIter = maxIter - 1
+
+        return true
+    }
+
+    GetDataNext() {
+        this.iteration++
+        return { value: this.charset, stop: this.iteration >= this.maxIter }
+    }
+
+    GetDataCurrent() {
+        let index = this.iteration
+        if (index == -1) {
+            index = 0
+        }
+
+        return { value: this.list[index % this.list.length], stop: index >= this.maxIter }
+    }
+
+    Reset() {
+        this.iteration = -1
     }
 }
 
 class SniperAttack {
-    constructor(payload) {
-        this.payload = payload
+    Setup() {
+        this.payload = new payloadClasses[payloadType.value]
+        return this.payload.Start()
     }
 
     async SendRequest() {
-        let data = this.payload.GetData()
+        let data = this.payload.GetDataNext()
         let position = Math.floor(this.payload.iteration / this.payload.list.length)
         let arg = args[position]
         let start = currentRequest.search(arg) - 1
@@ -109,7 +186,8 @@ class ClusterBombAttack {
 }
 
 const payloadClasses = {
-    0: SimpleListPayload
+    0: SimpleListPayload,
+    2: BruteForcerPayload
 }
 
 const attackClasses = {
@@ -119,15 +197,15 @@ const attackClasses = {
 
 let attackQueue = []
 const startButton = document.getElementById("startAttack")
+const attackType = document.getElementById("attackType")
 startButton.onclick = async function () {
     if (currentRequest == "") { return }
 
-    let payload = new payloadClasses[payloadType.value]
-    if (!payload.Start()) {
+    let attack = new attackClasses[attackType.value]
+    if (!attack.Setup()) {
         return
     }
 
-    let attack = new attackClasses[document.getElementById("attackType").value](payload)
     while (true) {
         if (await attack.SendRequest() == true) {
             break
@@ -140,11 +218,25 @@ startButton.onclick = async function () {
 
 
 //#region Attack select functions
-document.getElementById("attackType").onchange = () => {
-    let type = document.getElementById("attackType").value
-    console.log(type)
+attackType.onchange = () => {
+    let type = attackType.value
+    argsToData = []
 
-    selectedPosition.style.display = type == 3 ? "block" : "none"
+    if (type == 3) {
+        selectedPosition.innerHTML = ""
+
+        args.forEach(element => {
+            let option = document.createElement("option")
+            option.innerText = element
+            option.value = element
+
+            selectedPosition.appendChild(option)
+        })
+
+        UpdatePayloadForPosition()
+    }
+
+    selectedPositionPanel.style.display = type == 3 ? "block" : "none"
 }
 //#endregion
 
@@ -194,9 +286,27 @@ const payloadFormConfigs = {
                 let reader = new FileReader()
                 reader.readAsText(event.target.files[0])
                 reader.addEventListener('load', (event) => {
-                    document.getElementById("importedList").value = event.target.result
+                    let result = event.target.result
+                    if (attackType.value == 3) {
+                        argsToData[selectedPosition.value].data = result
+                        document.getElementById("importedList").enabled = false
+                    }
+                    
+                    document.getElementById("importedList").value = result
                 });
             });
+
+            let list = document.getElementById("importedList")
+            if (attackType.value == 3) {
+                let data = argsToData[selectedPosition.value].data
+                if (data) {
+                    list.enabled = false
+                    list.value = data
+                    return
+                }
+            }
+
+            list.value = ""
         }
     },
     2: {
@@ -224,9 +334,20 @@ const payloadFormConfigs = {
                 label.style.margin = "0"
             });
 
-            document.getElementById("charset").value = "abcdefghijklmnopqrstuvwxyz"
-            document.getElementById("minLength").value = "4"
-            document.getElementById("maxLength").value = "8"
+            let charset = "abcdefghijklmnopqrstuvwxyz"
+            let min = 4
+            let max = 8
+            document.getElementById("charset").value = charset
+            document.getElementById("minLength").value = min
+            document.getElementById("maxLength").value = max
+
+            if (attackType.value == 3) {
+                argsToData[selectedPosition.value].data = [
+                    charset = charset,
+                    min = min,
+                    max = max
+                ]
+            }
         }
     }
 }
@@ -234,14 +355,25 @@ const payloadFormConfigs = {
 const payloadConfig = document.getElementById("payloadConfig")
 const payloadType = document.getElementById("payloadType")
 
-function SwitchPayloadConfig() {
+function SwitchPayloadConfig(event, value) {
+    if (!value) {
+        value = payloadType.value
+    }
+
     payloadConfig.innerText = ""
-    let config = payloadFormConfigs[payloadType.value]
+    let config = payloadFormConfigs[value]
     if (config == null) { return }
 
     let form = renderForm(config)
     payloadConfig.appendChild(form)
     config.setup(form, config)
+
+    if (attackType.value == 3) {
+        let data = argsToData[selectedPosition.value]
+        if (!data || data.type != value) {
+            argsToData[selectedPosition.value] = { type: value, data: null }
+        }
+    }
 }
 
 payloadType.onchange = SwitchPayloadConfig
