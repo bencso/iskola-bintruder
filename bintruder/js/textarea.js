@@ -2,89 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const textarea = document.getElementById('requestBody');
     const lineNumbersEle = document.getElementById('linenumbers');
 
-    const textareaStyles = window.getComputedStyle(textarea);
-    [
-        'fontFamily',
-        'fontSize',
-        'fontWeight',
-        'letterSpacing',
-        'lineHeight',
-        'padding',
-    ].forEach((property) => {
-        lineNumbersEle.style[property] = textareaStyles[property];
-    });
-
-    const parseValue = (v) => v.endsWith('px') ? parseInt(v.slice(0, -2), 10) : 0;
-
-    const font = `${textareaStyles.fontSize} ${textareaStyles.fontFamily}`;
-    const paddingLeft = parseValue(textareaStyles.paddingLeft);
-    const paddingRight = parseValue(textareaStyles.paddingRight);
-
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    context.font = font;
-
-    const calculateNumLines = (str) => {
-        const textareaWidth = textarea.clientWidth - paddingLeft - paddingRight;
-        const words = str.split(' ');
-        let lineCount = 0;
-        let currentLine = '';
-        for (let i = 0; i < words.length; i++) {
-            const wordWidth = context.measureText(words[i] + ' ').width;
-            const lineWidth = context.measureText(currentLine).width;
-
-            if (lineWidth + wordWidth > textareaWidth) {
-                lineCount++;
-                currentLine = words[i] + ' ';
-            } else {
-                currentLine += words[i] + ' ';
-            }
-        }
-
-        if (currentLine.trim() !== '') {
-            lineCount++;
-        }
-
-        return lineCount;
-    };
-
     const calculateLineNumbers = () => {
-        const lines = textarea.value.split('\n');
-        const numLines = lines.map((line) => calculateNumLines(line));
+        const lines = textarea.value.split('\n').length;
+        const lineNumbers = Array.from({ length: lines }, (_, i) => i + 1);
 
-        let lineNumbers = [];
-        let i = 1;
-        while (numLines.length > 0) {
-            const numLinesOfSentence = numLines.shift();
-            lineNumbers.push(i);
-            if (numLinesOfSentence > 1) {
-                Array(numLinesOfSentence - 1)
-                    .fill('')
-                    .forEach((_) => lineNumbers.push(''));
-            }
-            i++;
-        }
-
-        return lineNumbers;
+        lineNumbersEle.innerHTML = lineNumbers.map((lineNumber) => `<div>${lineNumber || '&nbsp;'}</div>`).join('');
+        lineNumbersEle.style.height = `${textarea.scrollHeight}px`;
     };
 
-    const displayLineNumbers = () => {
-        const lineNumbers = calculateLineNumbers();
-        lineNumbersEle.innerHTML = Array.from({
-            length: lineNumbers.length
-        }, (_, i) => `<div>${lineNumbers[i] || '&nbsp;'}</div>`).join('');
-    };
-
-    textarea.addEventListener('input', () => {
-        displayLineNumbers();
-    });
-
-    displayLineNumbers();
-
-
-    // Remove the ResizeObserver code
-
-    textarea.addEventListener('blur', () => {
-        textarea.value = textarea.value.trim();
-    });
+    textarea.addEventListener('input', calculateLineNumbers);
+    textarea.addEventListener('blur', () => textarea.value = textarea.value.trim());
 });
