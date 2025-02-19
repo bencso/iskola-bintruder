@@ -104,6 +104,10 @@ class SimpleListPayload {
         return { value: this.list[index % this.list.length], stop: index >= (this.list.length) * args.length - 1 }
     }
 
+    GetPosition() {
+        return Math.floor(this.iteration / this.list.length)
+    }
+
     Reset() {
         this.iteration = -1
     }
@@ -131,7 +135,7 @@ class BruteForcerPayload {
             maxIter += Math.pow(charCount, index)
         }
 
-        this.maxIter = maxIter - 1
+        this.maxIter = maxIter * args.length - 1
 
         return true
     }
@@ -150,6 +154,10 @@ class BruteForcerPayload {
         return { value: this.list[index % this.list.length], stop: index >= this.maxIter }
     }
 
+    GetPosition() {
+        return Math.floor(this.iteration / this.maxIter)
+    }
+
     Reset() {
         this.iteration = -1
     }
@@ -163,7 +171,7 @@ class SniperAttack {
 
     async SendRequest() {
         let data = this.payload.GetDataNext()
-        let position = Math.floor(this.payload.iteration / this.payload.list.length)
+        let position = this.payload.GetPosition()
         let arg = args[position]
         let start = currentRequest.search(arg) - 1
         let value = data.value
