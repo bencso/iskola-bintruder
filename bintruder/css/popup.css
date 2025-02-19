@@ -1,0 +1,60 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #bebebe;
+  margin-bottom: 20px;
+}
+.header p {
+  padding: 0px;
+}
+
+table {
+  width: 100%;
+  border: 1px solid #bebebe;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+table th {
+  background-color: #333;
+  color: white;
+  border: 1px solid #333;
+}
+table th, table td {
+  border: 1px solid #bebebe;
+  padding: 8px;
+  text-align: center;
+}
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+textarea {
+  margin-top: 10px;
+  width: 100%;
+  height: auto;
+  resize: none;
+  border: 1px solid #bebebe;
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+  }
+}
+.succes {
+  color: green;
+}/*# sourceMappingURL=popup.css.map */
