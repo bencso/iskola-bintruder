@@ -342,9 +342,9 @@ const payloadFormConfigs = {
                 label.style.margin = "0"
             });
 
-            let charset = "abcdefghijklmnopqrstuvwxyz"
+            let charset = "abcd" //efghijklmnopqrstuvwxyz
             let min = 4
-            let max = 8
+            let max = 4 //8
             document.getElementById("charset").value = charset
             document.getElementById("minLength").value = min
             document.getElementById("maxLength").value = max
