@@ -52,6 +52,10 @@ document.getElementById("addParam").onclick = function () {
     currentRequest = final
     args.push(text);
 
+    if (attackType.value == 3) {
+        AddPositionToDropdown(text)
+    }
+
     UpdateRequest();
 }
 
@@ -257,17 +261,21 @@ attackType.onchange = () => {
         selectedPosition.innerHTML = ""
 
         args.forEach(element => {
-            let option = document.createElement("option")
-            option.innerText = element
-            option.value = element
-
-            selectedPosition.appendChild(option)
+            AddPositionToDropdown(element)
         })
 
         UpdatePayloadForPosition()
     }
 
     selectedPositionPanel.style.display = type == 3 ? "block" : "none"
+}
+
+function AddPositionToDropdown(position) {
+    let option = document.createElement("option")
+    option.innerText = position
+    option.value = position
+
+    selectedPosition.appendChild(option)
 }
 //#endregion
 
