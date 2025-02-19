@@ -36,16 +36,13 @@
     <div class="params">
         <div class="textarea__lines" id="linenumbers"></div>
         <textarea name="requestBody" id="requestBody" spellcheck="false"></textarea>
+        <!-- <div name="requestBody" id="requestBody" spellcheck="false" contenteditable="true"></div> -->
     </div>
 </div>
 <div class="right-side">
     <div>
         <span class="title">Payloads</span>
         <div class="payload-div">
-            <div id="selectedPositionPanel">
-                <span>Position:</span>
-                <select name="selectedPosition" id="selectedPosition"></select>
-            </div>
             <span>Payload type:</span>
             <select name="payloadType" id="payloadType">
                 <option value="0">Simple list</option>
@@ -57,9 +54,24 @@
         <div id="payloadConfig"></div>
     </div>
 
+    <button onclick="openPopup([{
+            payload: 'item.payloa',
+            status: 'item.status',
+            response: 'fafa'
+        },{
+            payload: 'item.payloa',
+            status: 'item.status',
+            response: 'fafa'
+        },{
+            payload: 'item.payloa',
+            status: 'item.status',
+            response: 'fafa'
+        }], 'fiaongioagionanioganiog')">Test</button>
+
 </div>
 <script type="module" src="js/main.js"></script>
 <script type="module" src="js/textarea.js"></script>
+<script src="js/popup.js"></script>
 </body>
 
 </html>
