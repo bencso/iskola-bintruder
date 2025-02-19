@@ -79,8 +79,8 @@ function UpdateRequest(value) {
 class SimpleListPayload {
     iteration = -1
 
-    Start() {
-        let list = document.getElementById("importedList").value
+    Start(data) {
+        let list = data || document.getElementById("importedList").value
         if (list == "") {
             return false
         }
@@ -92,7 +92,7 @@ class SimpleListPayload {
 
     GetDataNext() {
         this.iteration++
-        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= (this.list.length) * args.length - 1 }
+        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= this.list.length * args.length - 1 }
     }
 
     GetDataCurrent() {
@@ -101,7 +101,7 @@ class SimpleListPayload {
             index = 0
         }
 
-        return { value: this.list[index % this.list.length], stop: index >= (this.list.length) * args.length - 1 }
+        return { value: this.list[index % this.list.length], stop: index >= this.list.length * args.length - 1 }
     }
 
     GetPosition() {
@@ -116,10 +116,18 @@ class SimpleListPayload {
 class BruteForcerPayload {
     iteration = -1
 
-    Start() {
-        let charset = document.getElementById("charset").value
-        let min = document.getElementById("minLength").value
-        let max = document.getElementById("maxLength").value
+    Start(data) {
+        let charset, min, max
+        if (data) {
+            charset = data.value
+            min = data.value
+            max = data.value
+        }
+        else {
+            charset = document.getElementById("charset").value
+            min = document.getElementById("minLength").value
+            max = document.getElementById("maxLength").value
+        }
 
         if (charset == "" || min == "" || max == "") {ú
             return false
@@ -135,14 +143,14 @@ class BruteForcerPayload {
             maxIter += Math.pow(charCount, index)
         }
 
-        this.maxIter = maxIter * args.length - 1
+        this.maxIter = maxIter * args.length
 
         return true
     }
 
     GetDataNext() {
         this.iteration++
-        return { value: this.charset, stop: this.iteration >= this.maxIter }
+        return { value: this.charset, stop: this.iteration >= this.maxIter - 1 }
     }
 
     GetDataCurrent() {
@@ -151,7 +159,7 @@ class BruteForcerPayload {
             index = 0
         }
 
-        return { value: this.list[index % this.list.length], stop: index >= this.maxIter }
+        return { value: this.charset, stop: index >= this.maxIter - 1 }
     }
 
     GetPosition() {
@@ -184,12 +192,27 @@ class SniperAttack {
 }
 
 class ClusterBombAttack {
-    constructor(payload) {
-        this.payload = payload
+    Setup() {
+        this.payloads = []
+
+        for ( const [position, data] of Object.entries( argsToData ) ) {
+            console.log(position, data)
+            let payload = new payloadClasses[data.type]
+            if (payload.Start(data.data)) {
+                this.payloads[position] = payload
+            }
+            else {
+                return false
+            }
+        }
+
+        return true
     }
 
     async SendRequest() {
-        return true
+        //let data = this.payload.GetDataNext()
+
+        return true //data.stop
     }
 }
 
