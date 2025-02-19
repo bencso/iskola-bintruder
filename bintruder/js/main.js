@@ -32,9 +32,12 @@ let argsToData = []
 
 const target = document.getElementById("target")
 target.addEventListener("keydown", (e) => {
-    if (e.key != "Enter") { return }
+    if (e.key == "Enter") {
+        UpdateRequest(e.target.value)
+    }
+    else if (e.key == "") {
 
-    UpdateRequest(e.target.value)
+    }
 })
 
 document.getElementById("addParam").onclick = function () {
@@ -52,7 +55,7 @@ document.getElementById("addParam").onclick = function () {
     currentRequest = final
     args.push(text);
 
-    if (attackType.value == 3) {
+    if (IsInClusterMode()) {
         AddPositionToDropdown(text)
     }
 
@@ -269,14 +272,6 @@ attackType.onchange = () => {
 
     selectedPositionPanel.style.display = type == 3 ? "block" : "none"
 }
-
-function AddPositionToDropdown(position) {
-    let option = document.createElement("option")
-    option.innerText = position
-    option.value = position
-
-    selectedPosition.appendChild(option)
-}
 //#endregion
 
 //#region Payload select functions
@@ -326,7 +321,7 @@ const payloadFormConfigs = {
                 reader.readAsText(event.target.files[0])
                 reader.addEventListener('load', (event) => {
                     let result = event.target.result
-                    if (attackType.value == 3) {
+                    if (IsInClusterMode()) {
                         argsToData[selectedPosition.value].data = result
                         document.getElementById("importedList").enabled = false
                     }
@@ -336,7 +331,7 @@ const payloadFormConfigs = {
             });
 
             let list = document.getElementById("importedList")
-            if (attackType.value == 3) {
+            if (IsInClusterMode()) {
                 let data = argsToData[selectedPosition.value].data
                 if (data) {
                     list.enabled = false
@@ -380,7 +375,7 @@ const payloadFormConfigs = {
             document.getElementById("minLength").value = min
             document.getElementById("maxLength").value = max
 
-            if (attackType.value == 3) {
+            if (IsInClusterMode()) {
                 argsToData[selectedPosition.value].data = [
                     charset = charset,
                     min = min,
@@ -407,7 +402,7 @@ function SwitchPayloadConfig(event, value) {
     payloadConfig.appendChild(form)
     config.setup(form, config)
 
-    if (attackType.value == 3) {
+    if (IsInClusterMode()) {
         let data = argsToData[selectedPosition.value]
         if (!data || data.type != value) {
             argsToData[selectedPosition.value] = { type: value, data: null }
@@ -417,4 +412,20 @@ function SwitchPayloadConfig(event, value) {
 
 payloadType.onchange = SwitchPayloadConfig
 SwitchPayloadConfig() //init
+//#endregion
+
+
+
+//#region Util
+function IsInClusterMode() {
+    return attackType.value == 3
+}
+
+function AddPositionToDropdown(position) {
+    let option = document.createElement("option")
+    option.innerText = position
+    option.value = position
+
+    selectedPosition.appendChild(option)
+}
 //#endregion
