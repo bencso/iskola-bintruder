@@ -283,11 +283,8 @@ startButton.onclick = async function () {
     while (true) {
         let data = attack.SendRequest()
         console.log(data)
-        openPopup({
-            payload: "jhdgjd",
-            status: 69,
-            response: "kaka"
-        }, data.request)
+        //TODO: NOT MÜKÖDNI MÉG
+        openPopup([rawToFetch(data.request)], data.request);
 
         if (data.stop) {
             break
@@ -295,6 +292,38 @@ startButton.onclick = async function () {
     }
 
     console.log("done")
+}
+//#endregion
+
+//#region Request parsing
+async function rawToFetch(raw) {
+    const [requestLine, ...headersAndBody] = raw.split('\n');
+    const [method, path, protocol] = requestLine.split(' ');
+
+    const headers = {};
+    let body = '';
+
+    let isHeaderSection = true;
+    for (const line of headersAndBody) {
+        if (isHeaderSection && line === '') {
+            isHeaderSection = false;
+            continue;
+        }
+        if (isHeaderSection) {
+            const [headerName, headerValue] = line.split(': ');
+            headers[headerName] = headerValue;
+        } else {
+            body += line;
+        }
+    }
+
+    return {
+        method,
+        path,
+        protocol,
+        headers,
+        body
+    };
 }
 //#endregion
 

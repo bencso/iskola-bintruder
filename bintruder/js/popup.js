@@ -1,85 +1,79 @@
-let list = []
+let list = [];
+let currentPopup = null;
 
-export function openPopup(attack,requestBodyText) {
-    list.push(attack)
+export function openPopup(attack, requestBodyText) {
+    list.push({ attack, requestBodyText });
+    if (!currentPopup || currentPopup.closed) {
+        showNextPopup();
+    }
+}
+
+function showNextPopup() {
+    if (list.length === 0) {
+        return;
+    }
+
+    const { attack, requestBodyText } = list.shift();
+    console.log(attack,requestBodyText);   
 
     const height = 800;
     const width = 500;
-    const popupWindow = window.open("", "_blank", `height=${height}, width=${width}`, false);
-
-    popupWindow.document.body.style.resize = "none";
-    
-    popupWindow.document.body.style.backgroundColor = "#f9f9f9";
+    currentPopup = window.open("", "_blank", `height=${height}, width=${width}`, false);
+    currentPopup.document.body.style.fontFamily = "Arial, sans-serif";
+    currentPopup.document.body.style.backgroundColor = "#f9f9f9";
     const cssFile = document.createElement("link");
     cssFile.rel = "stylesheet";
     cssFile.type = "text/css";
     cssFile.href = "css/popup.css";
-    popupWindow.document.head.appendChild(cssFile);
-    popupWindow.document.title = "Attack result";
-    popupWindow.moveTo((window.screen.width - width) / 2, (window.screen.height - height) / 2);
+    currentPopup.document.head.appendChild(cssFile);
+    currentPopup.document.title = "Attack result";
+    currentPopup.moveTo((window.screen.width - width) / 2, (window.screen.height - height) / 2);
 
     const headerDiv = document.createElement("div");
     headerDiv.className = "header";
     const title = document.createElement("h3");
-    title.textContent = "Attack result";
+    title.textContent = "Attack result"; 
+    headerDiv.appendChild(title);
 
 
     const table = document.createElement("table");
 
     const headers = ["#", "payload", "status", "response"];
     const headerRow = document.createElement("tr");
-    
+
     headers.forEach(headerText => {
         const header = document.createElement("th");
         header.textContent = headerText;
         headerRow.appendChild(header);
     });
-    
-    table.appendChild(headerRow);
 
-    let data = [];
 
-    list.forEach((item, index) => {
-        data.push({
-            number: index + 1,
-            payload: item.payload,
-            status: item.status,
-            response: item.response
-        });
-    });
 
-    data.forEach(item => {
+    attack.forEach((attack, index) => {
         const row = document.createElement("tr");
-        const numberCell = document.createElement("td");
+        const indexCell = document.createElement("td");
+        indexCell.textContent = index + 1;
+        row.appendChild(indexCell);
+
         const payloadCell = document.createElement("td");
-        const statusCell = document.createElement("td");
-        const responseCell = document.createElement("td");
-        
-        numberCell.textContent = item.number;
-        payloadCell.textContent = item.payload;
-        statusCell.textContent = item.status;
-        responseCell.textContent = item.response;
-        
-        if (item.status === "200") {
-            row.classList.add("success");
-        }
-        
-        row.appendChild(numberCell);
+        payloadCell.textContent = attack.payload;
         row.appendChild(payloadCell);
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = attack.status;
         row.appendChild(statusCell);
+
+        const responseCell = document.createElement("td");
+        responseCell.textContent = attack.response;
         row.appendChild(responseCell);
-        
+
         table.appendChild(row);
     });
-    
-    const requestBody = document.createElement("textarea");
-    requestBody.className = "request-body";
-    requestBody.textContent = requestBodyText;
-    requestBody.disabled = true;
-    
-    
-    headerDiv.appendChild(title);
-    popupWindow.document.body.appendChild(headerDiv);
-    popupWindow.document.body.appendChild(table);
-    popupWindow.document.body.appendChild(requestBody);
+
+    currentPopup.document.body.appendChild(headerDiv);
+    currentPopup.document.body.appendChild(table);
+
+    currentPopup.addEventListener("unload", function () {
+        showNextPopup();
+    });
 }
