@@ -24,6 +24,7 @@ function UpdatePayloadForPosition() {
     }
 
     argsToData[position] = { type: payloadType.value, data: null }
+    SwitchPayloadConfig(null, payloadType.value)
 }
 
 let currentRequest = ""
@@ -56,6 +57,7 @@ document.getElementById("addParam").onclick = function () {
     args.push(text);
 
     if (IsInClusterMode()) {
+        UpdatePayloadForPosition()
         AddPositionToDropdown(text)
     }
 
@@ -92,14 +94,19 @@ class SimpleListPayload {
             return false
         }
 
-        this.list = list.split("\n")
+        this.list = list.replaceAll("\r", "").split("\n")
+
+        this.maxIter = this.list.length
+        if (!IsInClusterMode()) {
+            this.maxIter *= args.length
+        }
 
         return true
     }
 
     GetDataNext() {
         this.iteration++
-        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= this.list.length * args.length - 1 }
+        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= this.maxIter - 1 }
     }
 
     GetDataCurrent() {
@@ -108,7 +115,7 @@ class SimpleListPayload {
             index = 0
         }
 
-        return { value: this.list[index % this.list.length], stop: index >= this.list.length * args.length - 1 }
+        return { value: this.list[index % this.list.length], stop: index >= this.maxIter - 1 }
     }
 
     GetPosition() {
@@ -201,12 +208,12 @@ class SniperAttack {
 class ClusterBombAttack {
     Setup() {
         this.payloads = []
+        this.currentPayloadIndex = 0
 
         for ( const [position, data] of Object.entries( argsToData ) ) {
-            console.log(position, data)
             let payload = new payloadClasses[data.type]
             if (payload.Start(data.data)) {
-                this.payloads[position] = payload
+                this.payloads.push({ position: position, payload: payload})
             }
             else {
                 return false
@@ -217,9 +224,41 @@ class ClusterBombAttack {
     }
 
     async SendRequest() {
-        //let data = this.payload.GetDataNext()
+        let req = currentRequest
+        let stop = false
+        for (let index = 0; index < this.payloads.length; index++) {
+            let isCurrent = index == this.currentPayloadIndex
+            let payloadData = this.payloads[index]
+            let payload = payloadData.payload
+            let data
+            if (isCurrent) {
+                data = payload.GetDataNext()
+            }
+            else {
+                data = payload.GetDataCurrent()
+            }
 
-        return true //data.stop
+            let arg = payloadData.position
+            let start = req.search(arg) - 1
+            let value = data.value
+            req = req.splice(start, 1, value).splice(start + value.length, arg.length + 1, "")
+            
+            if (data.stop && isCurrent) {
+                this.currentPayloadIndex++
+                // payload.Reset()
+                // this.payloads.forEach(element => {
+                //     element.payload.Reset()
+                // });
+
+                stop = this.currentPayloadIndex >= this.payloads.length
+            }
+        }
+
+        req.replaceAll("$", "")
+        console.log(req)
+
+
+        return stop
     }
 }
 
