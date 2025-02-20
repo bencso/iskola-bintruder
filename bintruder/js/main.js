@@ -96,12 +96,17 @@ class SimpleListPayload {
 
         this.list = list.replaceAll("\r", "").split("\n")
 
+        this.maxIter = this.list.length
+        if (!IsInClusterMode()) {
+            this.maxIter *= args.length
+        }
+
         return true
     }
 
     GetDataNext() {
         this.iteration++
-        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= this.list.length * args.length - 1 }
+        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= this.maxIter - 1 }
     }
 
     GetDataCurrent() {
@@ -110,7 +115,7 @@ class SimpleListPayload {
             index = 0
         }
 
-        return { value: this.list[index % this.list.length], stop: index >= this.list.length * args.length - 1 }
+        return { value: this.list[index % this.list.length], stop: index >= this.maxIter - 1 }
     }
 
     GetPosition() {
@@ -206,7 +211,6 @@ class ClusterBombAttack {
         this.currentPayloadIndex = 0
 
         for ( const [position, data] of Object.entries( argsToData ) ) {
-            console.log(position, data)
             let payload = new payloadClasses[data.type]
             if (payload.Start(data.data)) {
                 this.payloads.push({ position: position, payload: payload})
@@ -220,17 +224,14 @@ class ClusterBombAttack {
     }
 
     async SendRequest() {
-        if (true) {
-            return true
-        }
-
         let req = currentRequest
         let stop = false
-        for (let index = 0; index < this.payloads; index++) {
+        for (let index = 0; index < this.payloads.length; index++) {
+            let isCurrent = index == this.currentPayloadIndex
             let payloadData = this.payloads[index]
             let payload = payloadData.payload
             let data
-            if (index == this.currentPayloadIndex) {
+            if (isCurrent) {
                 data = payload.GetDataNext()
             }
             else {
@@ -242,11 +243,12 @@ class ClusterBombAttack {
             let value = data.value
             req = req.splice(start, 1, value).splice(start + value.length, arg.length + 1, "")
             
-            if (data.stop) {
+            if (data.stop && isCurrent) {
                 this.currentPayloadIndex++
-                this.payloads.forEach(element => {
-                    element.Reset()
-                });
+                // payload.Reset()
+                // this.payloads.forEach(element => {
+                //     element.payload.Reset()
+                // });
 
                 stop = this.currentPayloadIndex >= this.payloads.length
             }
