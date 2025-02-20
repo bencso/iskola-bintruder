@@ -1,4 +1,8 @@
-export function openPopup(attackList,requestBodyText) {
+let list = []
+
+export function openPopup(attack,requestBodyText) {
+    list.push(attack)
+
     const height = 800;
     const width = 500;
     const popupWindow = window.open("", "_blank", `height=${height}, width=${width}`, false);
@@ -35,7 +39,7 @@ export function openPopup(attackList,requestBodyText) {
 
     let data = [];
 
-    attackList.forEach((item, index) => {
+    list.forEach((item, index) => {
         data.push({
             number: index + 1,
             payload: item.payload,

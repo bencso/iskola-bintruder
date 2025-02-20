@@ -1,6 +1,7 @@
 //#region Dependencies
 import { rawRequest } from "./dependencies.js"
 import { renderForm } from "./field.js"
+import { openPopup } from "./popup.js"
 //#endregion
 
 const requestBody = document.getElementById("requestBody")
@@ -98,7 +99,7 @@ class SimpleListPayload {
 
         this.maxIter = this.list.length
         if (!IsInClusterMode()) {
-            this.maxIter *= args.length
+            this.maxIter = this.maxIter * args.length
         }
 
         return true
@@ -191,7 +192,7 @@ class SniperAttack {
         return this.payload.Start()
     }
 
-    async SendRequest() {
+    SendRequest() {
         let data = this.payload.GetDataNext()
         let position = this.payload.GetPosition()
         let arg = args[position]
@@ -199,9 +200,7 @@ class SniperAttack {
         let value = data.value
         let req = currentRequest.splice(start, 1, value).splice(start + value.length, arg.length + 1, "").replaceAll("$", "")
 
-        console.log(req)
-
-        return data.stop
+        return { stop: data.stop, request: req }
     }
 }
 
@@ -223,7 +222,7 @@ class ClusterBombAttack {
         return true
     }
 
-    async SendRequest() {
+    SendRequest() {
         let req = currentRequest
         let stop = false
         for (let index = 0; index < this.payloads.length; index++) {
@@ -255,10 +254,8 @@ class ClusterBombAttack {
         }
 
         req.replaceAll("$", "")
-        console.log(req)
 
-
-        return stop
+        return { stop: stop, request: req }
     }
 }
 
@@ -284,7 +281,15 @@ startButton.onclick = async function () {
     }
 
     while (true) {
-        if (await attack.SendRequest() == true) {
+        let data = attack.SendRequest()
+        console.log(data)
+        openPopup({
+            payload: "jhdgjd",
+            status: 69,
+            response: "kaka"
+        }, data.request)
+
+        if (data.stop) {
             break
         }
     }
