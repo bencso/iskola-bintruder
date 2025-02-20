@@ -1,4 +1,4 @@
-function openPopup(attackList,requestBodyText) {
+export function openPopup(attackList,requestBodyText) {
     const height = 800;
     const width = 500;
     const popupWindow = window.open("", "_blank", `height=${height}, width=${width}`, false);
@@ -33,7 +33,7 @@ function openPopup(attackList,requestBodyText) {
     
     table.appendChild(headerRow);
 
-    data = [];
+    let data = [];
 
     attackList.forEach((item, index) => {
         data.push({
