@@ -2,18 +2,10 @@ let list = [];
 let currentPopup = null;
 
 export function openPopup(attack, requestBodyText) {
+    console.log(attack,requestBodyText);
+
     list.push({ attack, requestBodyText });
-    if (!currentPopup || currentPopup.closed) {
-        showNextPopup();
-    }
-}
-
-function showNextPopup() {
-    if (list.length === 0) {
-        return;
-    }
-
-    const { attack, requestBodyText } = list.shift();
+    
     console.log(attack,requestBodyText);   
 
     const height = 800;
@@ -38,16 +30,16 @@ function showNextPopup() {
 
     const table = document.createElement("table");
 
-    const headers = ["#", "payload", "status", "response"];
+    const headers = ["#", "payload name", "status", "payload"];
     const headerRow = document.createElement("tr");
+
+    table.appendChild(headerRow);
 
     headers.forEach(headerText => {
         const header = document.createElement("th");
         header.textContent = headerText;
         headerRow.appendChild(header);
     });
-
-
 
     attack.forEach((attack, index) => {
         const row = document.createElement("tr");
@@ -56,15 +48,15 @@ function showNextPopup() {
         row.appendChild(indexCell);
 
         const payloadCell = document.createElement("td");
-        payloadCell.textContent = attack.payload;
+        payloadCell.textContent = attack.param;
         row.appendChild(payloadCell);
 
         const statusCell = document.createElement("td");
-        statusCell.textContent = attack.status;
+        statusCell.textContent = "200";
         row.appendChild(statusCell);
 
         const responseCell = document.createElement("td");
-        responseCell.textContent = attack.response;
+        responseCell.textContent = attack.data.body;
         row.appendChild(responseCell);
 
         table.appendChild(row);
@@ -72,6 +64,10 @@ function showNextPopup() {
 
     currentPopup.document.body.appendChild(headerDiv);
     currentPopup.document.body.appendChild(table);
+    let textarea = document.createElement("textarea");
+    textarea.textContent = requestBodyText;
+    textarea.disabled = true;
+    currentPopup.document.body.appendChild(textarea);
 
     currentPopup.addEventListener("unload", function () {
         showNextPopup();

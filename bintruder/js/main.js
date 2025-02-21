@@ -1,5 +1,5 @@
 //#region Dependencies
-import { rawRequest, cartesian } from "./dependencies.js"
+import { rawRequest } from "./dependencies.js"
 import { renderForm } from "./field.js"
 import { openPopup } from "./popup.js"
 //#endregion
@@ -37,19 +37,12 @@ target.addEventListener("keydown", (e) => {
     if (e.key == "Enter") {
         UpdateRequest(e.target.value)
     }
-})
+    else if (e.key == "") {
 
-document.addEventListener("keydown", (e) => {
-    if (e.key == "c" && e.altKey) {
-        e.preventDefault()
-        e.stopPropagation()
-        AddParam()
-
-        return false
     }
 })
 
-function AddParam() {
+document.getElementById("addParam").onclick = function () {
     let text = window.getSelection().toString();
     if (text == "") { return; }
     if (args.includes(text.replaceAll("$", ""))) {
@@ -71,8 +64,6 @@ function AddParam() {
 
     UpdateRequest();
 }
-
-document.getElementById("addParam").onclick = AddParam
 
 document.getElementById("removeParams").onclick = function () {
     args = []
@@ -169,26 +160,6 @@ class BruteForcerPayload {
 
         this.maxIter = maxIter * args.length
 
-        console.log(maxIter)
-
-        this.list = []
-        let charArray = charset.split("")
-        for (let i = min; i <= max; i++) {
-            let perLength = Array(i).fill(charArray)
-            // for (let j = 0; j < i; j++) {
-            //     perLength.push(charArray)
-            // }
-
-            let final = []
-            cartesian(...perLength).forEach(element => {
-                final.push(element.join(""))
-            });
-
-            this.list.push(...final)
-        }
-
-        console.log(this.list)
-
         return true
     }
 
@@ -228,8 +199,7 @@ class SniperAttack {
         let start = currentRequest.search(arg) - 1
         let value = data.value
         let req = currentRequest.splice(start, 1, value).splice(start + value.length, arg.length + 1, "").replaceAll("$", "")
-
-        return { stop: data.stop, request: req }
+        return { stop: data.stop, request: req, params: arg}
     }
 }
 
@@ -247,14 +217,6 @@ class ClusterBombAttack {
                 return false
             }
         }
-
-        let epic = []
-        this.payloads.forEach(element => {
-            epic.push(element.payload.list)
-        });
-
-        console.log(...epic)
-        console.log(cartesian(...epic))
 
         return true
     }
@@ -277,7 +239,12 @@ class ClusterBombAttack {
             let arg = payloadData.position
             let start = req.search(arg) - 1
             let value = data.value
+            let args = []
             req = req.splice(start, 1, value).splice(start + value.length, arg.length + 1, "")
+
+            console.log(payload, data)
+
+            args.push({ position: arg, value: value })
             
             if (data.stop && isCurrent) {
                 this.currentPayloadIndex++
@@ -292,7 +259,7 @@ class ClusterBombAttack {
 
         req.replaceAll("$", "")
 
-        return { stop: stop, request: req }
+        return { stop: stop, request: req, params: args}
     }
 }
 
@@ -319,11 +286,11 @@ startButton.onclick = async function () {
 
     while (true) {
         let data = attack.SendRequest()
-        //console.log(data)
-        //TODO: NOT MÜKÖDNI MÉG
-        openPopup([rawToFetch(data.request)], data.request);
+        console.log(data)
+        attackQueue.push({param: data.params, data: await rawToFetch(data.request)})
 
         if (data.stop) {
+            openPopup(attackQueue, currentRequest)
             break
         }
     }
@@ -342,6 +309,7 @@ async function rawToFetch(raw) {
 
     let isHeaderSection = true;
     for (const line of headersAndBody) {
+        console.log(line)
         if (isHeaderSection && line === '') {
             isHeaderSection = false;
             continue;
