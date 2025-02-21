@@ -142,3 +142,6 @@ if (!String.prototype.splice) {
         return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
     };
 }
+
+//https://stackoverflow.com/a/43053803
+export const cartesian = (...a) => a.reduce((a, b) => a.flatMap(d => b.map(e => [d, e].flat())));
