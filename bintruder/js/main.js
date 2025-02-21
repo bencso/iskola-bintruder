@@ -1,5 +1,5 @@
 //#region Dependencies
-import { rawRequest } from "./dependencies.js"
+import { rawRequest, cartesian } from "./dependencies.js"
 import { renderForm } from "./field.js"
 import { openPopup } from "./popup.js"
 //#endregion
@@ -37,12 +37,19 @@ target.addEventListener("keydown", (e) => {
     if (e.key == "Enter") {
         UpdateRequest(e.target.value)
     }
-    else if (e.key == "") {
+})
 
+document.addEventListener("keydown", (e) => {
+    if (e.key == "c" && e.altKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        AddParam()
+
+        return false
     }
 })
 
-document.getElementById("addParam").onclick = function () {
+function AddParam() {
     let text = window.getSelection().toString();
     if (text == "") { return; }
     if (args.includes(text.replaceAll("$", ""))) {
@@ -64,6 +71,8 @@ document.getElementById("addParam").onclick = function () {
 
     UpdateRequest();
 }
+
+document.getElementById("addParam").onclick = AddParam
 
 document.getElementById("removeParams").onclick = function () {
     args = []
@@ -160,6 +169,26 @@ class BruteForcerPayload {
 
         this.maxIter = maxIter * args.length
 
+        console.log(maxIter)
+
+        this.list = []
+        let charArray = charset.split("")
+        for (let i = min; i <= max; i++) {
+            let perLength = Array(i).fill(charArray)
+            // for (let j = 0; j < i; j++) {
+            //     perLength.push(charArray)
+            // }
+
+            let final = []
+            cartesian(...perLength).forEach(element => {
+                final.push(element.join(""))
+            });
+
+            this.list.push(...final)
+        }
+
+        console.log(this.list)
+
         return true
     }
 
@@ -218,6 +247,14 @@ class ClusterBombAttack {
                 return false
             }
         }
+
+        let epic = []
+        this.payloads.forEach(element => {
+            epic.push(element.payload.list)
+        });
+
+        console.log(...epic)
+        console.log(cartesian(...epic))
 
         return true
     }
@@ -282,7 +319,7 @@ startButton.onclick = async function () {
 
     while (true) {
         let data = attack.SendRequest()
-        console.log(data)
+        //console.log(data)
         //TODO: NOT MÜKÖDNI MÉG
         openPopup([rawToFetch(data.request)], data.request);
 
