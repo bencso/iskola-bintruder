@@ -143,9 +143,9 @@ class BruteForcerPayload {
     Start(data) {
         let charset, min, max
         if (data) {
-            charset = data.value
-            min = data.value
-            max = data.value
+            charset = data[0]
+            min = data[1]
+            max = data[2]
         }
         else {
             charset = document.getElementById("charset").value
@@ -167,17 +167,20 @@ class BruteForcerPayload {
             maxIter += Math.pow(charCount, index)
         }
 
-        this.maxIter = maxIter * args.length
-
-        console.log(maxIter)
+        if (IsInClusterMode()) {
+            this.maxIter = maxIter
+        }
+        else {
+            this.maxIter = maxIter * args.length
+        }
 
         this.list = []
         let charArray = charset.split("")
         for (let i = min; i <= max; i++) {
-            let perLength = Array(i).fill(charArray)
-            // for (let j = 0; j < i; j++) {
-            //     perLength.push(charArray)
-            // }
+            let perLength = []
+            for (let j = 0; j < i; j++) {
+                perLength.push(charArray)
+            }
 
             let final = []
             cartesian(...perLength).forEach(element => {
@@ -187,14 +190,12 @@ class BruteForcerPayload {
             this.list.push(...final)
         }
 
-        console.log(this.list)
-
         return true
     }
 
     GetDataNext() {
         this.iteration++
-        return { value: this.charset, stop: this.iteration >= this.maxIter - 1 }
+        return { value: this.list[this.iteration % this.list.length], stop: this.iteration >= this.maxIter - 1 }
     }
 
     GetDataCurrent() {
@@ -203,11 +204,11 @@ class BruteForcerPayload {
             index = 0
         }
 
-        return { value: this.charset, stop: index >= this.maxIter - 1 }
+        return { value: this.list[index], stop: index >= this.maxIter - 1 }
     }
 
     GetPosition() {
-        return Math.floor(this.iteration / this.maxIter)
+        return Math.floor(this.iteration / this.list.length)
     }
 
     Reset() {
@@ -253,8 +254,8 @@ class ClusterBombAttack {
             epic.push(element.payload.list)
         });
 
-        console.log(...epic)
-        console.log(cartesian(...epic))
+        // console.log(...epic)
+        // console.log(cartesian(...epic))
 
         return true
     }
@@ -319,9 +320,9 @@ startButton.onclick = async function () {
 
     while (true) {
         let data = attack.SendRequest()
-        //console.log(data)
+        console.log(data)
         //TODO: NOT MÜKÖDNI MÉG
-        openPopup([rawToFetch(data.request)], data.request);
+        // openPopup([rawToFetch(data.request)], data.request);
 
         if (data.stop) {
             break
